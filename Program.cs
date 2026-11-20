@@ -21,9 +21,18 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
-var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
-var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+string jwtKey =
+       Environment.GetEnvironmentVariable("JWT_KEY")
+       ?? throw new InvalidOperationException("JWT_KEY is missing.");
+
+string jwtIssuer =
+  Environment.GetEnvironmentVariable("JWT_ISSUER")
+  ?? throw new InvalidOperationException("JWT_ISSUER is missing.");
+
+string jwtAudience =
+  Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+  ?? throw new InvalidOperationException("JWT_AUDIENCE is missing.");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {

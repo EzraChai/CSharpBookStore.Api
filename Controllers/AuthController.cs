@@ -8,8 +8,18 @@ namespace BookStore.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IConfiguration configuration) : ControllerBase
+public class AuthController() : ControllerBase
 {
+    private readonly string jwtKey =
+        Environment.GetEnvironmentVariable("JWT_KEY")
+        ?? throw new InvalidOperationException("JWT_KEY is missing.");
+    private readonly string jwtIssuer =
+        Environment.GetEnvironmentVariable("JWT_ISSUER")
+        ?? throw new InvalidOperationException("JWT_ISSUER is missing.");
+    private readonly string jwtAudience =
+        Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+        ?? throw new InvalidOperationException("JWT_AUDIENCE is missing.");
+
     [HttpPost("login")]
     public IActionResult Login(LoginDto request)
     {
@@ -27,7 +37,7 @@ public class AuthController(IConfiguration configuration) : ControllerBase
         };
 
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)
+            Encoding.UTF8.GetBytes(jwtKey)
         );
 
         var credentials = new SigningCredentials(
@@ -36,8 +46,8 @@ public class AuthController(IConfiguration configuration) : ControllerBase
         );
 
         var token = new JwtSecurityToken(
-            issuer: configuration["Jwt:Issuer"],
-            audience: configuration["Jwt:Audience"],
+            issuer: jwtIssuer,
+            audience: jwtAudience,
             claims: claims,
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: credentials

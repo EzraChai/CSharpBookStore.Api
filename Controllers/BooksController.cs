@@ -43,6 +43,26 @@ namespace BookStore.Api.Controllers
             );
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Book>> UpdateBook(int id, Book updatedBook)
+        {
+            var book = await dbContext.Books.FindAsync(id);
+
+            if (book is null)
+            {
+                return NotFound();
+            }
+            book.ISBN = updatedBook.ISBN;
+            book.Title = updatedBook.Title;
+            book.Author = updatedBook.Author;
+            book.Price = updatedBook.Price;
+            book.PublishedDate = updatedBook.PublishedDate;
+
+            await dbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Book>> DeleteBook(int id)
         {
